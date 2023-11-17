@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "target": "ESNext",
+        "allowJs": true,
+        "checkJs": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "maxNodeModuleJsDepth": 0,
+        "strict": true,
+        "noEmit": true,
+        "types": [
+            "@league-of-foundry-developers/foundry-vtt-types",
+            "@league-of-foundry-developers/foundry-vtt-dnd5e-types"
+        ]
+    }
+}

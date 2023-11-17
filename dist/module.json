@@ -1,0 +1,53 @@
+{
+    "$schema": "https://json.schemastore.org/foundryvtt-module-manifest.json",
+    "id": "my-homebrew",
+    "title": "My Homebrew",
+    "description": "A collection of my homebrew content.",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Cyrus Leung",
+            "discord": "darklight#8335",
+            "url": "https://github.com/DarkLight1337"
+        }
+    ],
+    "compatibility": {
+        "minimum": "11",
+        "verified": "11.315"
+    },
+    "relationships": {
+        "requires": [
+            {
+                "id": "midi-qol",
+                "type": "module"
+            },
+            {
+                "id": "dae",
+                "type": "module"
+            },
+            {
+                "id": "itemacro",
+                "type": "module"
+            },
+            {
+                "id": "times-up",
+                "type": "module"
+            }
+        ]
+    },
+    "esmodules": [
+        "src/index.mjs"
+    ],
+    "packs": [
+        {
+            "name": "my-homebrew",
+            "label": "My Homebrew",
+            "path": "./packs/my-homebrew",
+            "type": "Item",
+            "system": "dnd5e"
+        }
+    ],
+    "url": "https://github.com/DarkLight1337/my-homebrew",
+    "manifest": "https://raw.githubusercontent.com/DarkLight1337/my-homebrew/master/dist/module.json",
+    "download": "https://raw.githubusercontent.com/DarkLight1337/my-homebrew/master/dist/module.zip"
+}
