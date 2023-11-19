@@ -9,7 +9,7 @@ import { runMidiQOLMacro } from '../runner.mjs';
 const LEVEL_5_ABILITIES = [
     'Chromatic Warding',
     'Gem Flight',
-    'Enervating Breath', 'Repulsion Breath',
+    'Metallic Breath Weapon', 'Enervating Breath', 'Repulsion Breath',
 ];
 
 /**

@@ -39,7 +39,8 @@ export async function amuletOfBahamut(args) {
 
                         if (derivedItemName.startsWith('Ki-Fueled')) {
                             const userItem = targetActor.items.getName(baseItem.name);
-                            const kiItem = targetActor.items.getName('Ki');
+                            const kiItem = targetActor.items.getName('Ki Points')
+                                || targetActor.items.getName('Ki');
 
                             if (userItem == null) {
                                 ui.notifications?.warn('Cannot find the newly added item. Please manually set the resource consumption target.');
