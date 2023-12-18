@@ -1,6 +1,6 @@
 import { CharacterProps } from '../actor.mjs';
 import { Dialogs } from '../dialog.mjs';
-import { runMidiQOLMacro } from '../runner.mjs';
+import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
  * @template {{}} D
@@ -17,7 +17,7 @@ const LEVEL_5_ABILITIES = [
  * @param {unknown[]} args
  */
 export async function channelDivinity(args) {
-    await runMidiQOLMacro(args, async ({ actor }) => {
+    await runMidiQOLItemMacro(args, async ({ actor }) => {
         const charProps = new CharacterProps(actor);
 
         /**

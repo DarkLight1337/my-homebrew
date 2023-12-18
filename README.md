@@ -46,7 +46,7 @@ The macros are available under the global variable `MyHomebrew.Macros`. You can 
     - For macros:
         1. Update the code in this repository.
         2. Run `npm run lint` to check the code.
-            - Ignore any errors that are under `./node_modules/midi-qol`.
+            - Ignore any errors that are under `./node_modules`.
         3. Reload the web page to use the updated code.
             - If the code is somehow not updated, you may have to fully reload the world.
 

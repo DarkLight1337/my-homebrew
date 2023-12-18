@@ -20,6 +20,10 @@ import { TroubleShooter } from 'midi-qol/src/module/apps/TroubleShooter.js';
 import { LateTargetingDialog } from 'midi-qol/src/module/apps/LateTargeting.js';
 
 declare global {
+    interface Users {
+        get activeGM(): User;
+    }
+
     const dnd5e: {
         documents: {
             Actor5e: typeof Actor5e;

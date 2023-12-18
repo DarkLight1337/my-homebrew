@@ -1,5 +1,5 @@
 import { Dialogs } from '../dialog.mjs';
-import { runMidiQOLMacro } from '../runner.mjs';
+import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
  * @template {{}} D
@@ -16,7 +16,7 @@ const LEVEL_5_ABILITIES = [
  * @param {unknown[]} args
  */
 export async function kiFueledAncestry(args) {
-    await runMidiQOLMacro(args, async ({ actor }) => {
+    await runMidiQOLItemMacro(args, async ({ actor }) => {
         /**
          * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>[]}
          */

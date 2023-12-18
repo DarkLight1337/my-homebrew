@@ -1,6 +1,6 @@
 import { ChatContext } from '../chat.mjs';
 import { WeaponProps, getCompendiumItem } from '../item.mjs';
-import { runMidiQOLMacro } from '../runner.mjs';
+import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
  * @template {{}} D
@@ -241,7 +241,7 @@ class MacroHandler {
     #chat;
 
     /**
-     * @param {Parameters<Parameters<runMidiQOLMacro>[1]>[0]} macroArgs
+     * @param {Parameters<Parameters<runMidiQOLItemMacro>[1]>[0]} macroArgs
      * @param {FudgedRolls} fudgedRolls
      */
     constructor(macroArgs, fudgedRolls = {}) {
@@ -498,7 +498,7 @@ class MacroHandler {
  * @param {FudgedRolls} fudgedRolls
  */
 export async function halfMeltedFlameTongue(args, fudgedRolls) {
-    await runMidiQOLMacro(args, async (macroArgs) => {
+    await runMidiQOLItemMacro(args, async (macroArgs) => {
         await new MacroHandler(macroArgs, fudgedRolls).handleMacroPass();
     });
 }

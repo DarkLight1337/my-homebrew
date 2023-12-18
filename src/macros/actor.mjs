@@ -21,6 +21,13 @@ export class ActorProps {
 export class CharacterProps extends ActorProps {
 
     /**
+     * @returns {number}
+     */
+    getCurrentHp() {
+        return this.actor.system.attributes.hp.value;
+    }
+
+    /**
      * @param {string} name
      * @returns {number}
      */

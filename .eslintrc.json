@@ -16,6 +16,7 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
+    "ignorePatterns": ["build/**"],
     "rules": {
         "camelcase": ["error", { "properties": "never", "ignoreDestructuring": true }],
         "class-methods-use-this": "off",
@@ -34,6 +35,7 @@
         "no-restricted-syntax": "off",
         "no-underscore-dangle": "off",
         "no-unused-vars": ["error", { "args": "none" }],
+        "no-use-before-define": ["error", "nofunc"],
         "no-useless-constructor": "off",
         "object-shorthand": ["error", "consistent-as-needed"],
         "prefer-destructuring": "off",

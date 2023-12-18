@@ -1,4 +1,5 @@
 {
+    "exclude": ["build/**"],
     "compilerOptions": {
         "module": "NodeNext",
         "target": "ESNext",

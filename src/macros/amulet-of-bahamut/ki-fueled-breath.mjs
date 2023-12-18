@@ -1,5 +1,5 @@
 import { Dialogs } from '../dialog.mjs';
-import { runMidiQOLMacro } from '../runner.mjs';
+import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
  * @template {{}} D
@@ -10,7 +10,7 @@ import { runMidiQOLMacro } from '../runner.mjs';
  * @param {unknown[]} args
  */
 export async function kiFueledBreath(args) {
-    await runMidiQOLMacro(args, async ({ actor }) => {
+    await runMidiQOLItemMacro(args, async ({ actor }) => {
         /**
          * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>[]}
          */
