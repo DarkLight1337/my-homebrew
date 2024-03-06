@@ -8,7 +8,7 @@ import { runDAEMacro } from '../runner.mjs';
 
 /**
  * @param {string} name
- * @returns {Promise<Item5e>}
+ * @returns {Promise<dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>>}
  */
 function getDerivedItem(name) {
     return getCompendiumItem(`Amulet of Bahamut: ${name}`);
@@ -17,15 +17,19 @@ function getDerivedItem(name) {
 /**
  * @typedef {object} DerivedItemOptions
  * @property {((props: CharacterProps) => boolean)} [isAvailable]
- * @property {(macroArgs: ParsedDAEItemMacroArgs, userItem: Item5e) => Promise<void>} [postProcess]
+ * @property {(
+ *     macroArgs: ParsedDAEItemMacroArgs,
+ *     userItem: dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>
+ * ) => Promise<void>} [postProcess]
  */
 
 /**
  * @param {ParsedDAEItemMacroArgs} macroArgs
- * @param {Item5e} userItem 
+ * @param {dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>} userItem 
  */
 async function linkKiItemConsumeTarget(macroArgs, userItem) {
-    const kiItem = macroArgs.targetActor.items.getName('Ki Points');
+    const kiItem = macroArgs.targetActor.items.getName('Ki')
+        ?? macroArgs.targetActor.items.getName('Ki Points');
 
     if (userItem == null) {
         ui.notifications?.warn('Cannot find the newly added item. Please manually set the resource consumption target.');
@@ -63,6 +67,7 @@ export async function amuletOfBahamut(args) {
         const { targetActor } = macroArgs;
 
         if (args[0] === 'on') {
+            // @ts-expect-error
             const charProps = new CharacterProps(targetActor);
 
             await Promise.all(Object.entries(DERIVED_ITEMS)
@@ -74,6 +79,7 @@ export async function amuletOfBahamut(args) {
                         ui.notifications?.info(`An item (${baseItem.name}) has been added to your character sheet.`);
 
                         if (userItem instanceof dnd5e.documents.Item5e) {
+                            // @ts-expect-error
                             await postProcess?.(macroArgs, userItem);
                         } else {
                             throw new Error('The new item is not an instance of Item5e.');

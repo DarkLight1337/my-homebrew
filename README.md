@@ -32,9 +32,9 @@ The macros are available under the global variable `MyHomebrew.Macros`. You can 
 1. Clone this repository to your machine.
 2. Run `npm install` to setup the environment for JavaScript development.
 3. Create a new world for testing this module.
-4. Edit `./link_repo_to_local_vtt.py` and run it in Python to make this repository available to Foundry VTT via symbolic links.
-    - Note that you should execute this in the same operating system as the one Foundry VTT is installed on.
-    - You may need administrator privileges to create symbolic links on Windows.
+4. Edit `./link_vtt.py` and run it in Python to create symbolic links between this repository and Foundry VTT.
+    - On Windows, you may need administrator privileges to create symbolic links.
+    - If you are using [WSL](https://learn.microsoft.com/en-us/windows/wsl/), make sure to execute this in the same operating system as the one Foundry VTT is installed on.
 
 ### Live Testing
 
@@ -46,7 +46,7 @@ The macros are available under the global variable `MyHomebrew.Macros`. You can 
     - For macros:
         1. Update the code in this repository.
         2. Run `npm run lint` to check the code.
-            - Ignore any errors that are under `./node_modules`.
+            - Since TypeScript is unable to ignore errors in external packages while providing type information, it is not run in the `lint` step. To type check the code in this package only, use the filter feature in IDEs such as [VSCode](https://code.visualstudio.com/) to ignore errors originating elsewhere.
         3. Reload the web page to use the updated code.
             - If the code is somehow not updated, you may have to fully reload the world.
 

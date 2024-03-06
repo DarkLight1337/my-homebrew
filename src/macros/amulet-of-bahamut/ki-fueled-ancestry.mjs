@@ -1,11 +1,6 @@
 import { Dialogs } from '../dialog.mjs';
 import { runMidiQOLItemMacro } from '../runner.mjs';
 
-/**
- * @template {{}} D
- * @typedef {import('../item.mjs').ItemWithSystem<D>} ItemWithSystem
- */
-
 const LEVEL_5_ABILITIES = [
     'Chromatic Warding',
     'Gem Flight',
@@ -18,7 +13,7 @@ const LEVEL_5_ABILITIES = [
 export async function kiFueledAncestry(args) {
     await runMidiQOLItemMacro(args, async ({ actor }) => {
         /**
-         * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>[]}
+         * @type {dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>[]}
          */
         // @ts-expect-error
         const candidateRacialItems = actor.items.filter((i) => LEVEL_5_ABILITIES.includes(i.name));

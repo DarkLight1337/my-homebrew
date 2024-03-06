@@ -2,11 +2,6 @@ import { CharacterProps } from '../actor.mjs';
 import { Dialogs } from '../dialog.mjs';
 import { runMidiQOLItemMacro } from '../runner.mjs';
 
-/**
- * @template {{}} D
- * @typedef {import('../item.mjs').ItemWithSystem<D>} ItemWithSystem
- */
-
 const LEVEL_5_ABILITIES = [
     'Chromatic Warding',
     'Gem Flight',
@@ -18,10 +13,11 @@ const LEVEL_5_ABILITIES = [
  */
 export async function channelDivinity(args) {
     await runMidiQOLItemMacro(args, async ({ actor }) => {
+        // @ts-expect-error
         const charProps = new CharacterProps(actor);
 
         /**
-         * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>[]}
+         * @type {dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>[]}
          */
         // @ts-expect-error
         const candidateDivinityItems = actor.items.filter((i) => i.name.startsWith('Channel Divinity:'));
@@ -31,7 +27,7 @@ export async function channelDivinity(args) {
             await Dialogs.freecast(candidateDivinityItems, 'Channel Divinity effect', false);
 
             /**
-             * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>[]}
+             * @type {dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>[]}
              */
             // @ts-expect-error
             const candidateBreathItems = actor.items.filter((i) => i.name.startsWith('Breath Weapon'));
@@ -41,7 +37,7 @@ export async function channelDivinity(args) {
             }
 
             /**
-             * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>[]}
+             * @type {dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>[]}
              */
             let candidateRacialItems = [];
             if (charProps.getTotalLevels() >= 7) {

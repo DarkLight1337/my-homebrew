@@ -1,14 +1,9 @@
 import { ActivationItemProps } from './item.mjs';
 
-/**
- * @template {{}} D
- * @typedef {import('./item.mjs').ItemWithSystem<D>} ItemWithSystem
- */
-
 export class Dialogs {
 
     /**
-     * @template {Item} T
+     * @template {dnd5e_.Item5e<dnd5e_.SystemDataModel>} T
      * @param {ReadonlyArray<T>} items
      * @param {string} flavour
      * @returns {Promise<?T>}
@@ -38,7 +33,7 @@ export class Dialogs {
     }
 
     /**
-     * @param {ReadonlyArray<ItemWithSystem<Item5e.Templates.ActivatedEffect>>} items
+     * @param {ReadonlyArray<dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>>} items
      * @param {string} noun
      * @param {boolean} enableRecharge
      */

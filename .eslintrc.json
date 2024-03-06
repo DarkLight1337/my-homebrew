@@ -16,7 +16,7 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "ignorePatterns": ["build/**"],
+    "ignorePatterns": ["build/**", "dist/**", "types/dnd5e/**", "types/foundry/**"],
     "rules": {
         "camelcase": ["error", { "properties": "never", "ignoreDestructuring": true }],
         "class-methods-use-this": "off",

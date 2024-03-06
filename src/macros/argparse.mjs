@@ -1,17 +1,7 @@
 /**
- * @template {{}} D
- * @typedef {import('./actor.mjs').ActorWithSystem<D>} ActorWithSystem
- */
-
-/**
- * @template {{}} D
- * @typedef {import('./item.mjs').ItemWithSystem<D>} ItemWithSystem
- */
-
-/**
  * @typedef {object} ParsedDAEItemMacroArgs
- * @property {?ItemWithSystem<any>} originItem
- * @property {ActorWithSystem<any>} targetActor
+ * @property {?dnd5e_.Item5e<dnd5e_.SystemDataModel>} originItem
+ * @property {dnd5e_.Actor5e<dnd5e_.SystemDataModel>} targetActor
  */
 
 /**
@@ -65,19 +55,20 @@ export async function parseDAEItemMacroArgs(args) {
         throw new Error('The entity is not a 5e actor.');
     }
 
+    // @ts-expect-error
     return { originItem, targetActor };
 }
 
 /**
  * @typedef {object} ParsedMidiQOLMacroArgs
  * @property {string} macroPass
- * @property {ActorWithSystem<any>} actor
- * @property {TokenDocument} token
- * @property {ItemWithSystem<any>} item
+ * @property {dnd5e_.Actor5e<dnd5e_.SystemDataModel>} actor
+ * @property {foundry_.TokenDocument} token
+ * @property {dnd5e_.Item5e<dnd5e_.SystemDataModel>} item
  * @property {string} [itemCardId]
- * @property {TokenDocument[]} targets
- * @property {TokenDocument[]} hitTargets
- * @property {Roll} [damageRoll]
+ * @property {foundry_.TokenDocument[]} targets
+ * @property {foundry_.TokenDocument[]} hitTargets
+ * @property {foundry_.Roll} [damageRoll]
  * @property {boolean} isCritical
  * @property {InstanceType<typeof MidiQOL.Workflow>} workflow
  */
@@ -103,13 +94,13 @@ export async function parseMidiQOLFunctionMacroArgs(args) {
 /**
  * @typedef {object} RawMidiQOLItemMacroArgs
  * @property {string} macroPass
- * @property {string} actorUuid
+ * @property {dnd5e_.Actor5e<dnd5e_.SystemDataModel>} actor
  * @property {string} tokenUuid
- * @property {string} itemUuid
+ * @property {dnd5e_.Item5e<dnd5e_.SystemDataModel>} item
  * @property {string} [itemCardId]
- * @property {TokenDocument[]} targets
- * @property {TokenDocument[]} hitTargets
- * @property {Roll} [damageRoll]
+ * @property {foundry_.TokenDocument[]} targets
+ * @property {foundry_.TokenDocument[]} hitTargets
+ * @property {foundry_.Roll} [damageRoll]
  * @property {boolean} isCritical
  * @property {InstanceType<typeof MidiQOL.Workflow>} workflow
  */
@@ -133,16 +124,54 @@ export async function parseMidiQOLItemMacroArgs(args) {
         throw new Error('The macro pass is not a string');
     }
 
+    let actor = firstArg.actor;
+
+    // Try to match the type if possible
+    if (!(actor instanceof dnd5e.documents.Actor5e)) {
+        try {
+            // @ts-expect-error
+            const fallback = await fromUuid(actor.uuid);
+
+            if (fallback == null) {
+                throw new Error('The actor does not exist');
+            }
+            if (!(fallback instanceof dnd5e.documents.Actor5e)) {
+                throw new Error('Incorrect actor type');
+            }
+
+            // @ts-expect-error
+            actor = fallback;
+        } catch (e) {
+            console.warn('The actor is not an Actor5e instance:', actor);
+        }
+    }
+
     const tokenUuid = firstArg.tokenUuid;
     if (typeof tokenUuid !== 'string') {
         console.error('tokenUuid:', tokenUuid);
         throw new Error('The token UUID is not a string.');
     }
 
-    const itemUuid = firstArg.itemUuid;
-    if (typeof itemUuid !== 'string') {
-        console.error('itemUuid:', itemUuid);
-        throw new Error('The item UUID is not a string.');
+    let item = firstArg.item;
+
+    // Try to match the type if possible
+    if (!(item instanceof dnd5e.documents.Item5e)) {
+        try {
+            // @ts-expect-error
+            const fallback = await fromUuid(item.uuid);
+            if (fallback == null) {
+                // May be a fake item from DamageOnlyWorkflow
+                throw new Error('The item does not exist');
+            }
+            if (!(fallback instanceof dnd5e.documents.Item5e)) {
+                throw new Error('Incorrect item type');
+            }
+
+            // @ts-expect-error
+            item = fallback;
+        } catch (e) {
+            console.warn('The item is not an Item5e instance:', item);
+        }
     }
 
     const itemCardId = firstArg.itemCardId;
@@ -190,24 +219,10 @@ export async function parseMidiQOLItemMacroArgs(args) {
         throw new Error('The entity is not a token.');
     }
 
-    const actor = token.actor;
-    if (!(actor instanceof dnd5e.documents.Actor5e)) {
-        console.error('actor:', actor);
-        throw new Error('The entity is not a 5e actor.');
-    }
-
-    const item = await fromUuid(itemUuid);
-    if (item == null) {
-        throw new Error(`Cannot find item with UUID: ${itemUuid}`);
-    }
-    if (!(item instanceof dnd5e.documents.Item5e)) {
-        console.error('item:', item);
-        throw new Error('The entity is not a 5e item.');
-    }
-
     return {
         macroPass,
         actor,
+        // @ts-expect-error
         token,
         item,
         itemCardId,

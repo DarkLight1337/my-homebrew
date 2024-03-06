@@ -1,5 +1,5 @@
 {
-    "exclude": ["build/**"],
+    "exclude": ["build/**", "dist/**"],
     "compilerOptions": {
         "module": "NodeNext",
         "target": "ESNext",
@@ -7,12 +7,8 @@
         "checkJs": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "maxNodeModuleJsDepth": 0,
+        "maxNodeModuleJsDepth": 8,
         "strict": true,
         "noEmit": true,
-        "types": [
-            "@league-of-foundry-developers/foundry-vtt-types",
-            "@league-of-foundry-developers/foundry-vtt-dnd5e-types"
-        ]
     }
 }

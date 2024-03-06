@@ -1,3 +1,14 @@
+import { ActiveEffectData } from './foundry/common/documents/active-effect.mjs';
+import { ActorData } from './foundry/common/documents/actor.mjs';
+import { ChatMessageData } from './foundry/common/documents/chat-message.mjs';
+import { ItemData } from './foundry/common/documents/item.mjs';
+import { SceneData } from './foundry/common/documents/scene.mjs';
+import { TokenData } from './foundry/common/documents/token.mjs';
+import { UserData } from './foundry/common/documents/user.mjs';
+import { fromUuid as globalFromUuid } from './foundry/dist/core/utils.mjs';
+import * as foundryTypes from './foundry/public/scripts/foundry_.js';
+import * as dnd5eTypes from './dnd5e/dnd5e.mjs';
+
 import { configSettings, checkRule, enableWorkflow, midiSoundSettings } from 'midi-qol/src/module/settings.js';
 import { overTimeJSONData } from 'midi-qol/src/module/Hooks.js';
 import { SaferSocket } from 'midi-qol/src/module/GMAction.js';
@@ -20,42 +31,117 @@ import { TroubleShooter } from 'midi-qol/src/module/apps/TroubleShooter.js';
 import { LateTargetingDialog } from 'midi-qol/src/module/apps/LateTargeting.js';
 
 declare global {
-    interface Users {
-        get activeGM(): User;
+
+    // Foundry VTT
+    namespace foundry_ {
+        type DataModel = InstanceType<typeof foundry.abstract.DataModel>;
+        type TypeDataModel = InstanceType<typeof foundry.abstract.TypeDataModel> & DataModel;
+        type Document = InstanceType<typeof foundry.abstract.Document> & DataModel;
+
+        interface Collection<V> extends ReadonlyMap<string, V>, ReadonlyArray<V> {
+            getName(name: string, options: { strict: false }): V | undefined;
+            getName(name: string, options: { strict: true }): V;
+            getName(name: string, options?: { strict?: boolean }): V | undefined;
+        }
+
+        type DocumentCollection<T extends Document = Document> = foundryTypes.DocumentCollection & Collection<T>;
+        type WorldCollection<T extends Document = Document> = foundryTypes.WorldCollection & DocumentCollection<T>;
+        type CompendiumCollection<T extends Document = Document> = foundryTypes.CompendiumCollection & DocumentCollection<T>;
+        type CompendiumPacks<T extends Document = Document> = foundryTypes.CompendiumPacks & Collection<CompendiumCollection<T>>;
+
+        type Canvas = foundryTypes.Canvas;
+        type Game = foundryTypes.Game;
+        type Dialog = foundryTypes.Dialog;
+        type Roll = foundryTypes.Roll;
+        type Users = WorldCollection<User> & {
+            players: ReadonlyArray<User>;
+            activeGM: User | null;
+        };
+
+        type BaseActiveEffect = InstanceType<typeof foundry.documents.BaseActiveEffect> & ActiveEffectData & Document;
+        type ActiveEffect = foundryTypes.ActiveEffect & BaseActiveEffect;
+
+        type ActorData_ = Omit<ActorData, 'items' | 'effects'> & {
+            items: Collection<Item>;
+            effects: Collection<BaseActiveEffect>;
+        };
+        type BaseActor = InstanceType<typeof foundry.documents.BaseActor> & ActorData_ & Document;
+        type Actor = foundryTypes.Actor & BaseActor;
+
+        type BaseChatMessage = InstanceType<typeof foundry.documents.BaseChatMessage> & ChatMessageData & Document;
+        type ChatMessage = foundryTypes.ChatMessage & BaseChatMessage;
+
+        type ItemData_ = Omit<ItemData, 'effects'> & {
+            effects: Collection<ActiveEffect>;
+        };
+        type BaseItem = InstanceType<typeof foundry.documents.BaseItem> & ItemData_ & Document;
+        type Item = Omit<foundryTypes.Item, 'actor'> & {
+            get actor(): Actor | null;
+        } & BaseItem;
+
+        type BaseScene = InstanceType<typeof foundry.documents.BaseScene> & SceneData & Document;
+        type Scene = foundryTypes.Scene & BaseScene;
+
+        type BaseTokenDocument = InstanceType<typeof foundry.documents.BaseToken> & TokenData & Document;
+        type TokenDocument = foundryTypes.TokenDocument & BaseTokenDocument;
+
+        type BaseUser = InstanceType<typeof foundry.documents.BaseUser> & UserData & Document;
+        type User = foundryTypes.User & BaseUser;
     }
 
-    const dnd5e: {
-        documents: {
-            Actor5e: typeof Actor5e;
-            Item5e: typeof Item5e;
-        };
+    const ChatMessage: typeof foundry.abstract.Document & typeof foundryTypes.ChatMessage;
+    const Dialog: typeof foundryTypes.Dialog;
+    const Token: typeof foundryTypes.Token;
+    const TokenDocument: typeof foundry.abstract.Document & typeof foundryTypes.TokenDocument;
+    const Roll: typeof foundryTypes.Roll;
+
+    const canvas: foundryTypes.Canvas;
+    const game: foundryTypes.Game & {
+        get collections(): foundry_.Collection<string, foundry_.WorldCollection>;
+        get packs(): foundry_.Collection<string, foundry_.CompendiumCollection>;
+        get users(): foundry_.Users;
     };
 
-    namespace Actor5e {
-        interface Data {
-            system: Actor5e.Data.Data;
-        }
-    }
-    interface Actor5e {
-        system: Actor5e.Data.Data;
-        classes: Record<string, Item5e & { system: Item5e.Data.Class }>;
+    const fromUuid: typeof globalFromUuid;
 
-        createEmbeddedDocuments(embeddedName: string, data?: any[], context?: DocumentModificationContext): Promise<Document[]>;
-        updateEmbeddedDocuments(embeddedName: string, updates?: any[], context?: DocumentModificationContext): Promise<Document[]>;
-        deleteEmbeddedDocuments(embeddedName: string, ids?: string[], context?: DocumentModificationContext): Promise<Document[]>;
+    // dnd5e system
+    namespace dnd5e_ {
+        type SystemDataModel = InstanceType<typeof dnd5eTypes.dataModels.SystemDataModel> & foundry_.TypeDataModel;
+        type CurrencyTemplate = InstanceType<typeof dnd5eTypes.dataModels.shared.CurrencyTemplate> & SystemDataModel;
+
+        type ActorDataModel = InstanceType<typeof dnd5eTypes.dataModels.ActorDataModel> & SystemDataModel;
+        type CommonTemplate = InstanceType<typeof dnd5eTypes.dataModels.actor.CommonTemplate> & CurrencyTemplate & ActorDataModel;
+        type CreatureTemplate = InstanceType<typeof dnd5eTypes.dataModels.actor.CreatureTemplate> & CommonTemplate;
+        type CharacterData = InstanceType<typeof dnd5eTypes.dataModels.actor.CharacterData> & CreatureTemplate;
+
+        type ItemDataModel = InstanceType<typeof dnd5eTypes.dataModels.ItemDataModel> & SystemDataModel;
+        type ItemDescriptionTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ItemDescriptionTemplate> & SystemDataModel;
+        type ItemTypeTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ItemTypeTemplate> & SystemDataModel;
+        type IdentifiableTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.IdentifiableTemplate> & SystemDataModel;
+        type PhysicalItemTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.PhysicalItemTemplate> & SystemDataModel;
+        type EquippableItemTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.EquippableItemTemplate> & SystemDataModel;
+        type ActivatedEffectTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ActivatedEffectTemplate> & SystemDataModel;
+        type MountableTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.MountableTemplate> & SystemDataModel;
+        type ActionTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ActionTemplate> & ItemDataModel;
+
+        type WeaponData = InstanceType<typeof dnd5eTypes.dataModels.item.WeaponData>
+            & ItemDescriptionTemplate & IdentifiableTemplate & ItemTypeTemplate & PhysicalItemTemplate & EquippableItemTemplate
+            & ActivatedEffectTemplate & ActionTemplate & MountableTemplate
+            & ItemDataModel;
+
+        type Actor5e<S extends SystemDataModel> = Omit<InstanceType<typeof dnd5eTypes.documents.Actor5e> & foundry_.Actor, 'items' | 'effects'> & {
+            items: foundry_.Collection<Item5e<SystemDataModel>>;
+            effects: foundry_.Collection<foundry_.ActiveEffect>;
+            system: S;
+        };
+        type Item5e<S extends SystemDataModel> = Omit<InstanceType<typeof dnd5eTypes.documents.Item5e> & foundry_.Item, 'actor' | 'effects'> & {
+            actor: Actor5e<SystemDataModel> | null;
+            effects: foundry_.Collection<foundry_.ActiveEffect>;
+            system: S;
+        };
     }
 
-    namespace Item5e {
-        interface Data {
-            system: Item5e.Data.Data;
-        }
-    }
-    interface Item5e {
-        system: Item5e.Data.Data;
-
-        toObject(source?: boolean): any;
-    }
-
+    // MidiQOL module
     const MidiQOL: {
         addConcentration: typeof addConcentration;
         addUndoChatMessage: typeof addUndoChatMessage;
@@ -80,6 +166,7 @@ declare global {
         DummyWorkflow: typeof DummyWorkflow;
         enableWorkflow: typeof enableWorkflow;
         findNearby: typeof findNearby;
+        GameSystemConfig: typeof dnd5e.config;
         getChanges: typeof getChanges;
         getConcentrationEffect: typeof getConcentrationEffect;
         getDistance: typeof getDistanceSimpleOld;

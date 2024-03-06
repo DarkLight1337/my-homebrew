@@ -1,14 +1,9 @@
 /**
- * @template {{}} D
- * @typedef {Actor5e & { system: D }} ActorWithSystem
- */
-
-/**
- * @template {{}} D
+ * @template {dnd5e_.ActorDataModel} D
  */
 export class ActorProps {
     /**
-     * @param {ActorWithSystem<D>} actor
+     * @param {dnd5e_.Actor5e<D>} actor
      */
     constructor(actor) {
         this.actor = actor;
@@ -16,7 +11,7 @@ export class ActorProps {
 }
 
 /**
- * @augments ActorProps<Actor5e.Templates.Character>
+ * @augments ActorProps<dnd5e_.CharacterData>
  */
 export class CharacterProps extends ActorProps {
 
@@ -24,6 +19,7 @@ export class CharacterProps extends ActorProps {
      * @returns {number}
      */
     getCurrentHp() {
+        // @ts-expect-error
         return this.actor.system.attributes.hp.value;
     }
 

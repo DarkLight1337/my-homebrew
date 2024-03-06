@@ -3,11 +3,6 @@ import { WeaponProps, getCompendiumItem } from '../item.mjs';
 import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
- * @template {{}} D
- * @typedef {import('../item.mjs').ItemWithSystem<D>} ItemWithSystem
- */
-
-/**
  * @param {string} s
  * @returns {string}
  */
@@ -28,7 +23,7 @@ class FlameTongueItemProps {
     #chat;
 
     /**
-     * @param {ItemWithSystem<Item5e.Data.Weapon>} item
+     * @param {dnd5e_.Item5e<dnd5e_.WeaponData>} item
      */
     constructor(item) {
         this.item = item;
@@ -248,20 +243,25 @@ class MacroHandler {
         this.macroArgs = macroArgs;
         this.fudgedRolls = fudgedRolls;
 
+        // @ts-expect-error
         this.#itemProps = new FlameTongueItemProps(macroArgs.item);
         this.#chat = new ChatContext(macroArgs.item.name);
     }
 
     /**
      * @param {string} name
-     * @returns {Promise<Item5e>}
+     * @returns {Promise<dnd5e_.Item5e<dnd5e_.WeaponData>>}
      */
     #getDerivedItem(name) {
         return getCompendiumItem(`Unstable Flame: ${name}`);
     }
 
     /**
-     * @param {{ targets: TokenDocument[], damageRoll: Roll, damageType: string }} params
+     * @param {{
+     *     targets: foundry_.TokenDocument[];
+     *     damageRoll: foundry_.Roll;
+     *     damageType: string;
+     * }} params
      */
     async #applyDamage({ targets, damageRoll, damageType }) {
         if (damageRoll.total == null) {
@@ -273,10 +273,10 @@ class MacroHandler {
         // eslint-disable-next-line no-new
         new MidiQOL.DamageOnlyWorkflow(
             actor,
-            // @ts-expect-error
             token,
             damageRoll.total,
             damageType,
+            // @ts-expect-error
             targets,
             damageRoll,
             { flavor: `(${toSentenceCase(damageType)})`, itemCardId: itemCardId },
@@ -284,7 +284,7 @@ class MacroHandler {
     }
 
     /**
-     * @param {Item5e} item
+     * @param {dnd5e_.Item5e<dnd5e_.WeaponData>} item
      */
     async #applyAoE(item) {
         await MidiQOL.completeItemUse(item, {}, { checkGMStatus: true });
@@ -405,7 +405,7 @@ class MacroHandler {
     }
 
     /**
-     * @param {Item5e} item
+     * @param {dnd5e_.Item5e<dnd5e_.WeaponData>} item
      */
     async #rollAoE(item) {
         const { actor } = this.macroArgs;
@@ -416,17 +416,13 @@ class MacroHandler {
         let auxItem = actor.items.getName(item.name);
         if (auxItem == null) {
             await actor.createEmbeddedDocuments('Item', [item.toObject()]);
-
-            /**
-             * @type {Item5e}
-             */
-            // @ts-expect-error
             const newItem = actor.items.getName(item.name, { strict: true });
             auxItem = newItem;
         } else {
             await auxItem.update(item.toObject());
         }
 
+        // @ts-expect-error
         await this.#applyAoE(auxItem);
     }
 
@@ -468,7 +464,7 @@ class MacroHandler {
 
     /**
      * @param {{
-     *     targets: TokenDocument[];
+     *     targets: foundry_.TokenDocument[];
      *     diceCount: number;
      *     diceSize: number;
      *     damageType: string;

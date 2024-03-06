@@ -4,22 +4,12 @@ import { ActivationItemProps, getCompendiumItem } from '../item.mjs';
 import { runDAEMacro, runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
- * @template {{}} D
- * @typedef {import('../actor.mjs').ActorWithSystem<D>} ActorWithSystem
- */
-
-/**
  * @typedef {import('../argparse.mjs').ParsedDAEItemMacroArgs} ParsedDAEItemMacroArgs
  */
 
 /**
- * @template {{}} D
- * @typedef {import('../item.mjs').ItemWithSystem<D>} ItemWithSystem
- */
-
-/**
  * @param {string} name
- * @returns {Promise<Item5e>}
+ * @returns {Promise<dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>>}
  */
 function getDerivedItem(name) {
     return getCompendiumItem(`Water Ward: ${name}`);
@@ -28,7 +18,10 @@ function getDerivedItem(name) {
 /**
  * @typedef {object} DerivedItemOptions
  * @property {((props: CharacterProps) => boolean)} [isAvailable]
- * @property {(macroArgs: ParsedDAEItemMacroArgs, userItem: Item5e) => Promise<void>} [postProcess]
+ * @property {(
+ *     macroArgs: ParsedDAEItemMacroArgs,
+ *     userItem: dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>
+ * ) => Promise<void>} [postProcess]
  */
 
 /**
@@ -49,6 +42,7 @@ export async function waterWard(args) {
             const { targetActor } = macroArgs;
 
             if (args[0] === 'on') {
+                // @ts-expect-error
                 const charProps = new CharacterProps(targetActor);
 
                 await Promise.all(Object.entries(DERIVED_ITEMS)
@@ -60,6 +54,7 @@ export async function waterWard(args) {
                             ui.notifications?.info(`An item (${baseItem.name}) has been added to your character sheet.`);
 
                             if (userItem instanceof dnd5e.documents.Item5e) {
+                                // @ts-expect-error
                                 await postProcess?.(macroArgs, userItem);
                             } else {
                                 throw new Error('The new item is not an instance of Item5e.');
@@ -88,12 +83,12 @@ export async function waterWard(args) {
 
             for (const target of workflow.targets) {
                 /**
-                 * @type {ActorWithSystem<Actor5e.Templates.Character>}
+                 * @type {dnd5e_.Actor5e<dnd5e_.CharacterData>}
                  */
                 const targetActor = target.actor;
 
                 /**
-                 * @type {ItemWithSystem<Item5e.Templates.ActivatedEffect>}
+                 * @type {dnd5e_.Item5e<dnd5e_.ActivatedEffectTemplate>}
                  */
                 // @ts-expect-error
                 const targetItem = targetActor.items.getName('Water Ward');
