@@ -3,7 +3,7 @@
     "id": "my-homebrew",
     "title": "My Homebrew",
     "description": "A collection of my homebrew content.",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "authors": [
         {
             "name": "Cyrus Leung",
@@ -23,7 +23,7 @@
                 "manifest": "https://raw.githubusercontent.com/foundryvtt/dnd5e/master/system.json",
                 "compatibility": {
                     "minimum": "3.0.3",
-                    "verified": "3.0.3"
+                    "verified": "3.0.4"
                 }
             }
         ],
@@ -34,7 +34,7 @@
                 "manifest": "https://gitlab.com/tposney/midi-qol/raw/v11/package/module.json",
                 "compatibility": {
                     "minimum": "11.4",
-                    "verified": "11.4.7"
+                    "verified": "11.4.12"
                 }
             },
             {
@@ -43,7 +43,7 @@
                 "manifest": "https://gitlab.com/tposney/dae/raw/v11/package/module.json",
                 "compatibility": {
                     "minimum": "11.3",
-                    "verified": "11.3.10"
+                    "verified": "11.3.14"
                 }
             },
             {
@@ -52,7 +52,7 @@
                 "manifest": "https://gitlab.com/tposney/times-up/raw/v11/package/module.json",
                 "compatibility": {
                     "minimum": "11.3",
-                    "verified": "11.3.5"
+                    "verified": "11.3.8"
                 }
             },
             {
@@ -61,7 +61,7 @@
                 "manifest": "https://github.com/kandashi/Active-Auras/releases/latest/download/module.json",
                 "compatibility": {
                     "minimum": "0.9.6",
-                    "verified": "0.9.7"
+                    "verified": "0.9.8"
                 }
             },
             {

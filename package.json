@@ -1,6 +1,6 @@
 {
   "name": "my-homebrew",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A collection of my homebrew content.",
   "main": "src/index.mjs",
   "scripts": {
