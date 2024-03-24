@@ -16,7 +16,7 @@ export class Dialogs {
                 title: 'Select Item',
                 content: flavour,
                 buttons: Object.fromEntries(items.map((item, i) => {
-                    isSelected = false;
+                    isSelected = true;
 
                     return [i, {
                         icon: `<div class="item-image"> <image src=${item.img} width="40" height="40" style="margin-top: 8px;"></div>`,
