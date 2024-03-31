@@ -93,14 +93,14 @@ export class WeaponProps extends ItemProps {
      */
     getAttackBonusFormula() {
         // @ts-expect-error
-        return this.item.system.attackBonus;
+        return this.item.system.attack.bonus;
     }
 
     /**
      * @param {string} value
      */
     async setAttackBonusFormula(value) {
-        await this.item.update({ 'system.attackBonus': value });
+        await this.item.update({ 'system.attack.bonus': value });
     }
 
     /**
