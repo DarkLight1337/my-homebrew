@@ -3,14 +3,55 @@
  * @param {string} name
  * @returns {Promise<dnd5e_.Item5e<D>>}
  */
-export async function getCompendiumItem(name) {
+export async function getCompendiumEquipment(name) {
     if (game.packs == null) {
         throw new Error('The game is not yet ready');
     }
 
-    const pack = game.packs.get('my-homebrew.my-homebrew');
+    const pack = game.packs.get('my-homebrew.equipment');
     if (pack == null) {
-        throw new Error('Cannot find compendium pack for My Homebrew');
+        throw new Error('Cannot find compendium pack for Equipment');
+    }
+
+    await pack.getIndex();
+    const itemId = pack.index.getName(name, { strict: true })._id;
+
+    return pack.getDocument(itemId);
+}
+
+/**
+ * @template {dnd5e_.SystemDataModel} D 
+ * @param {string} name
+ * @returns {Promise<dnd5e_.Item5e<D>>}
+ */
+export async function getCompendiumFeature(name) {
+    if (game.packs == null) {
+        throw new Error('The game is not yet ready');
+    }
+
+    const pack = game.packs.get('my-homebrew.features');
+    if (pack == null) {
+        throw new Error('Cannot find compendium pack for Features');
+    }
+
+    await pack.getIndex();
+    const itemId = pack.index.getName(name, { strict: true })._id;
+
+    return pack.getDocument(itemId);
+}
+
+/**
+ * @param {string} name
+ * @returns {Promise<foundry_.RollTable>}
+ */
+export async function getCompendiumRollTable(name) {
+    if (game.packs == null) {
+        throw new Error('The game is not yet ready');
+    }
+
+    const pack = game.packs.get('my-homebrew.rolltables');
+    if (pack == null) {
+        throw new Error('Cannot find compendium pack for Roll Tables');
     }
 
     await pack.getIndex();
@@ -70,88 +111,6 @@ export class ItemProps {
 }
 
 /**
- * @augments ItemProps<dnd5e_.WeaponData>
- */
-export class WeaponProps extends ItemProps {
-
-    /**
-     * @returns {boolean}
-     */
-    getIsAttuned() {
-        // @ts-expect-error
-        const attunedValue = CONFIG.DND5E?.attunementTypes?.ATTUNED;
-        if (typeof attunedValue !== 'number') {
-            throw new Error('Cannot find int flag for ATTUNED');
-        }
-
-        // @ts-expect-error
-        return this.item.system.attunement === attunedValue;
-    }
-
-    /**
-     * @returns {string}
-     */
-    getAttackBonusFormula() {
-        // @ts-expect-error
-        return this.item.system.attack.bonus;
-    }
-
-    /**
-     * @param {string} value
-     */
-    async setAttackBonusFormula(value) {
-        await this.item.update({ 'system.attack.bonus': value });
-    }
-
-    /**
-     * @returns {string}
-     */
-    getDamageFormula() {
-        // @ts-expect-error
-        return this.item.system.damage.parts[0][0];
-    }
-
-    /**
-     * @param {string} value
-     */
-    async setDamageFormula(value) {
-        const newDamage = {
-            // @ts-expect-error
-            ...this.item.system.damage,
-            parts: [
-                // @ts-expect-error
-                [value, this.item.system.damage.parts[0][1]],
-                // @ts-expect-error
-                ...this.item.system.damage.parts.slice(1),
-            ],
-        };
-
-        await this.item.update({ 'system.damage': newDamage });
-    }
-
-    /**
-     * @returns {string}
-     */
-    getVersatileDamageFormula() {
-        // @ts-expect-error
-        return this.item.system.damage.versatile;
-    }
-
-    /**
-     * @param {string} value
-     */
-    async setVersatileDamageFormula(value) {
-        const newDamage = {
-            // @ts-expect-error
-            ...this.item.system.damage,
-            versatile: value,
-        };
-
-        await this.item.update({ 'system.damage': newDamage });
-    }
-}
-
-/**
  * @augments ItemProps<dnd5e_.ActivatedEffectTemplate>
  */
 export class ActivationItemProps extends ItemProps {
@@ -168,6 +127,79 @@ export class ActivationItemProps extends ItemProps {
      * @param {number} value
      */
     async setCurrentUses(value) {
-        await this.item.update({ 'system.uses.value': value });
+        await this.item.update({
+            // @ts-expect-error
+            'system.uses.spent': this.item.system.uses.max - value,
+            'system.uses.value': value,
+        });
+    }
+
+    /**
+     * @returns {number}
+     */
+    getMaxUses() {
+        // @ts-expect-error
+        return this.item.system.uses.max;
+    }
+
+    /**
+     * @param {number} value
+     */
+    async setMaxUses(value) {
+        await this.item.update({
+            // @ts-expect-error
+            'system.uses.max': this.item.system.uses.max,
+        });
+    }
+}
+
+/**
+ * @augments ActivationItemProps
+ */
+export class WeaponProps extends ActivationItemProps {
+
+    /**
+     * @returns {boolean}
+     */
+    getIsAttuned() {
+        // @ts-expect-error
+        return this.item.system.attuned;
+    }
+
+    /**
+     * @returns {foundry_.Collection<foundry_.ActiveEffect>}
+     */
+    getEffects() {
+        return this.item.effects;
+    }
+
+    /**
+     * @returns {string}
+     */
+    getDamageBonus() {
+        // @ts-expect-error
+        return this.item.system.damage.base.bonus;
+    }
+
+    /**
+     * @param {string} value
+     */
+    async setDamageBonus(value) {
+        await this.item.update({ 'system.damage.base.bonus': value });
+    }
+
+    /**
+     * @returns {string}
+     */
+    getVersatileDamageBonus() {
+        // @ts-expect-error
+        return this.item.system.damage.versatile.bonus;
+    }
+
+    /**
+     * @param {string} value
+     */
+    async setVersatileDamageBonus(value) {
+        await this.item.update({ 'system.damage.versatile.bonus': value });
     }
 }

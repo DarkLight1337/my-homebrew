@@ -129,7 +129,6 @@ export async function parseMidiQOLItemMacroArgs(args) {
     // Try to match the type if possible
     if (!(actor instanceof dnd5e.documents.Actor5e)) {
         try {
-            // @ts-expect-error
             const fallback = await fromUuid(actor.uuid);
 
             if (fallback == null) {
@@ -157,7 +156,6 @@ export async function parseMidiQOLItemMacroArgs(args) {
     // Try to match the type if possible
     if (!(item instanceof dnd5e.documents.Item5e)) {
         try {
-            // @ts-expect-error
             const fallback = await fromUuid(item.uuid);
             if (fallback == null) {
                 // May be a fake item from DamageOnlyWorkflow

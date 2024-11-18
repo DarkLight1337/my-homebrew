@@ -79,7 +79,6 @@ export async function observeHit(args) {
                     reactionFlavor: `<h4>${workflow.actor.name} has hit ${target.name}. Do you wish to react against ${target.name}?</h4>`,
                     reactionItemList: originActor.items.filter(
                         (item) => itemReaction(item, triggerType, maxLevel, hasUsedReaction)),
-                    // @ts-expect-error
                     triggerTokenUuid: target.uuid,
                     triggerType: triggerType,
                     options: {},

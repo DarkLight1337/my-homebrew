@@ -20,15 +20,15 @@ import {
     displayDSNForRoll, doConcentrationCheck, doOverTimeEffect, findNearby,
     getChanges, getConcentrationEffect, getDistanceSimple, getDistanceSimpleOld, getTokenPlayerName, getTraitMult,
     hasCondition, hasUsedBonusAction, hasUsedReaction, isTargetable, midiRenderRoll, MQfromActorUuid, MQfromUuid,
-    playerFor, playerForActor, reactionDialog, reportMidiCriticalFlags,
-    setBonusActionUsed, setReactionUsed, tokenForActor, validRolAbility,
+    playerFor, playerForActor, reactionDialog, reportMidiCriticalFlags, requestReactions,
+    setBonusActionUsed, setReactionUsed, tokenForActor, validRollAbility,
 } from 'midi-qol/src/module/utils.js';
 import { ConfigPanel } from 'midi-qol/src/module/apps/ConfigPanel.js';
-import { resolveLateTargeting, templateTokens } from 'midi-qol/src/module/itemhandling.js';
+import { resolveTargetConfirmation, templateTokens } from 'midi-qol/src/module/itemhandling.js';
 import { addUndoChatMessage, getUndoQueue, removeMostRecentWorkflow, showUndoQueue, undoMostRecentWorkflow } from 'midi-qol/src/module/undo.js';
 import { showUndoWorkflowApp } from 'midi-qol/src/module/apps/UndoWorkflow.js';
 import { TroubleShooter } from 'midi-qol/src/module/apps/TroubleShooter.js';
-import { LateTargetingDialog } from 'midi-qol/src/module/apps/LateTargeting.js';
+import { TargetConfirmationDialog } from 'midi-qol/src/module/apps/TargetConfirmation.js';
 
 declare global {
 
@@ -52,11 +52,8 @@ declare global {
         type Canvas = foundryTypes.Canvas;
         type Game = foundryTypes.Game;
         type Dialog = foundryTypes.Dialog;
-        type Roll = foundryTypes.Roll;
-        type Users = WorldCollection<User> & {
-            players: ReadonlyArray<User>;
-            activeGM: User | null;
-        };
+        type Roll = foundry.dice.Roll;
+        type RollTable = foundryTypes.RollTable;
 
         type BaseActiveEffect = InstanceType<typeof foundry.documents.BaseActiveEffect> & ActiveEffectData & Document;
         type ActiveEffect = foundryTypes.ActiveEffect & BaseActiveEffect;
@@ -75,9 +72,7 @@ declare global {
             effects: Collection<ActiveEffect>;
         };
         type BaseItem = InstanceType<typeof foundry.documents.BaseItem> & ItemData_ & Document;
-        type Item = Omit<foundryTypes.Item, 'actor'> & {
-            get actor(): Actor | null;
-        } & BaseItem;
+        type Item = foundryTypes.Item;
 
         type BaseScene = InstanceType<typeof foundry.documents.BaseScene> & SceneData & Document;
         type Scene = foundryTypes.Scene & BaseScene;
@@ -93,36 +88,32 @@ declare global {
     const Dialog: typeof foundryTypes.Dialog;
     const Token: typeof foundryTypes.Token;
     const TokenDocument: typeof foundry.abstract.Document & typeof foundryTypes.TokenDocument;
-    const Roll: typeof foundryTypes.Roll;
+    const Roll: typeof foundry.dice.Roll;
 
     const canvas: foundryTypes.Canvas;
-    const game: foundryTypes.Game & {
-        get collections(): foundry_.Collection<string, foundry_.WorldCollection>;
-        get packs(): foundry_.Collection<string, foundry_.CompendiumCollection>;
-        get users(): foundry_.Users;
-    };
+    const game: foundryTypes.Game;
 
     const fromUuid: typeof globalFromUuid;
 
     // dnd5e system
     namespace dnd5e_ {
-        type SystemDataModel = InstanceType<typeof dnd5eTypes.dataModels.SystemDataModel> & foundry_.TypeDataModel;
-        type CurrencyTemplate = InstanceType<typeof dnd5eTypes.dataModels.shared.CurrencyTemplate> & SystemDataModel;
+        type SystemDataModel = dnd5eTypes.dataModels.SystemDataModel;
+        type CurrencyTemplate = dnd5eTypes.dataModels.shared.CurrencyTemplate;
 
-        type ActorDataModel = InstanceType<typeof dnd5eTypes.dataModels.ActorDataModel> & SystemDataModel;
+        type ActorDataModel = dnd5eTypes.dataModels.ActorDataModel;
         type CommonTemplate = InstanceType<typeof dnd5eTypes.dataModels.actor.CommonTemplate> & CurrencyTemplate & ActorDataModel;
-        type CreatureTemplate = InstanceType<typeof dnd5eTypes.dataModels.actor.CreatureTemplate> & CommonTemplate;
-        type CharacterData = InstanceType<typeof dnd5eTypes.dataModels.actor.CharacterData> & CreatureTemplate;
+        type CreatureTemplate = dnd5eTypes.dataModels.actor.CreatureTemplate;
+        type CharacterData = CharacterData;
 
-        type ItemDataModel = InstanceType<typeof dnd5eTypes.dataModels.ItemDataModel> & SystemDataModel;
-        type ItemDescriptionTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ItemDescriptionTemplate> & SystemDataModel;
-        type ItemTypeTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ItemTypeTemplate> & SystemDataModel;
-        type IdentifiableTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.IdentifiableTemplate> & SystemDataModel;
-        type PhysicalItemTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.PhysicalItemTemplate> & SystemDataModel;
-        type EquippableItemTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.EquippableItemTemplate> & SystemDataModel;
-        type ActivatedEffectTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ActivatedEffectTemplate> & SystemDataModel;
-        type MountableTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.MountableTemplate> & SystemDataModel;
-        type ActionTemplate = InstanceType<typeof dnd5eTypes.dataModels.item.ActionTemplate> & ItemDataModel;
+        type ItemDataModel = dnd5eTypes.dataModels.ItemDataModel;
+        type ItemDescriptionTemplate = dnd5eTypes.dataModels.item.ItemDescriptionTemplate;
+        type ItemTypeTemplate = dnd5eTypes.dataModels.item.ItemTypeTemplate;
+        type IdentifiableTemplate = dnd5eTypes.dataModels.item.IdentifiableTemplate;
+        type PhysicalItemTemplate = dnd5eTypes.dataModels.item.PhysicalItemTemplate;
+        type EquippableItemTemplate = dnd5eTypes.dataModels.item.EquippableItemTemplate;
+        type ActivatedEffectTemplate = dnd5eTypes.dataModels.item.ActivatedEffectTemplate;
+        type MountableTemplate = dnd5eTypes.dataModels.item.MountableTemplate;
+        type ActionTemplate = dnd5eTypes.dataModels.item.ActionTemplate;
 
         type WeaponData = InstanceType<typeof dnd5eTypes.dataModels.item.WeaponData>
             & ItemDescriptionTemplate & IdentifiableTemplate & ItemTypeTemplate & PhysicalItemTemplate & EquippableItemTemplate
@@ -135,6 +126,8 @@ declare global {
             system: S;
         };
         type Item5e<S extends SystemDataModel> = Omit<InstanceType<typeof dnd5eTypes.documents.Item5e> & foundry_.Item, 'actor' | 'effects'> & {
+            name: string;
+            img: string;
             actor: Actor5e<SystemDataModel> | null;
             effects: foundry_.Collection<foundry_.ActiveEffect>;
             system: S;
@@ -178,7 +171,6 @@ declare global {
         hasUsedReaction: typeof hasUsedReaction;
         incapacitatedConditions: string[];
         isTargetable: typeof isTargetable;
-        LateTargetingDialog: typeof LateTargetingDialog;
         midiRenderRoll: typeof midiRenderRoll;
         midiSoundSettings: () => typeof midiSoundSettings;
         MQfromActorUuid: typeof MQfromActorUuid;
@@ -188,22 +180,23 @@ declare global {
         playerFor: typeof playerFor;
         playerForActor: typeof playerForActor;
         reactionDialog: typeof reactionDialog;
+        requestReactions: typeof requestReactions;
         removeMostRecentWorkflow: typeof removeMostRecentWorkflow;
         reportMidiCriticalFlags: typeof reportMidiCriticalFlags;
-        resolveLateTargeting: typeof resolveLateTargeting;
+        resolveTargetConfirmation: typeof resolveTargetConfirmation;
         selectTargetsForTemplate: typeof templateTokens;
         setBonusActionUsed: typeof setBonusActionUsed;
         setReactionUsed: typeof setReactionUsed;
         showUndoQueue: typeof showUndoQueue;
         showUndoWorkflowApp: typeof showUndoWorkflowApp;
         socket: () => typeof SaferSocket;
+        TargetConfirmationDialog: typeof TargetConfirmationDialog;
         tokenForActor: typeof tokenForActor;
         TrapWorkflow: typeof TrapWorkflow;
         TroubleShooter: typeof TroubleShooter;
         undoMostRecentWorkflow: typeof undoMostRecentWorkflow;
-        validRolAbility: typeof validRolAbility;
+        validRollAbility: typeof validRollAbility;
         Workflow: typeof Workflow;
-        WORKFLOWSTATES: typeof WORKFLOWSTATES;
     };
 
     // Macro arguments

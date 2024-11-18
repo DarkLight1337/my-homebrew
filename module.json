@@ -3,7 +3,7 @@
   "id": "my-homebrew",
   "title": "My Homebrew",
   "description": "A collection of my homebrew content.",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "authors": [
     {
       "name": "Cyrus Leung",
@@ -12,8 +12,8 @@
     }
   ],
   "compatibility": {
-    "minimum": "11",
-    "verified": "11.315"
+    "minimum": "12",
+    "verified": "12.331"
   },
   "relationships": {
     "systems": [
@@ -22,28 +22,47 @@
         "type": "system",
         "manifest": "https://raw.githubusercontent.com/foundryvtt/dnd5e/master/system.json",
         "compatibility": {
-          "minimum": "3.1.0",
-          "verified": "3.1.1"
+          "minimum": "4.1.0",
+          "maximum": "4.9.99",
+          "verified": "4.1.1"
         }
       }
     ],
     "requires": [
       {
+        "id": "dnd-players-handbook",
+        "type": "module",
+        "manifest": "https://r2.foundryvtt.com/packages-public/dnd-players-handbook/module.json",
+        "compatibility": {
+          "minimum": "1.2.0",
+          "verified": "1.2.0"
+        }
+      },
+      {
+        "id": "dnd-dungeon-masters-guide",
+        "type": "module",
+        "manifest": "https://r2.foundryvtt.com/packages-public/dnd-dungeon-masters-guide/module.json",
+        "compatibility": {
+          "minimum": "1.0.0",
+          "verified": "1.0.0"
+        }
+      },
+      {
         "id": "midi-qol",
         "type": "module",
-        "manifest": "https://gitlab.com/tposney/midi-qol/raw/v11/package/module.json",
+        "manifest": "https://gitlab.com/tposney/midi-qol/raw/v12dnd4/package/module.json",
         "compatibility": {
-          "minimum": "11.4.15",
-          "verified": "11.4.15"
+          "minimum": "12.4",
+          "verified": "12.4.8"
         }
       },
       {
         "id": "dae",
         "type": "module",
-        "manifest": "https://gitlab.com/tposney/dae/raw/v11/package/module.json",
+        "manifest": "https://gitlab.com/tposney/dae/raw/dndv4/package/module.json",
         "compatibility": {
-          "minimum": "11.3",
-          "verified": "11.3.15"
+          "minimum": "12.0.2",
+          "maximum": "12.0.3"
         }
       },
       {
@@ -52,7 +71,7 @@
         "manifest": "https://gitlab.com/tposney/times-up/raw/v11/package/module.json",
         "compatibility": {
           "minimum": "11.3",
-          "verified": "11.3.8"
+          "verified": "11.3.19"
         }
       },
       {
@@ -60,17 +79,8 @@
         "type": "module",
         "manifest": "https://github.com/kandashi/Active-Auras/releases/latest/download/module.json",
         "compatibility": {
-          "minimum": "0.9.6",
-          "verified": "0.9.10"
-        }
-      },
-      {
-        "id": "itemacro",
-        "type": "module",
-        "manifest": "https://github.com/Foundry-Workshop/Item-Macro/releases/latest/download/module.json",
-        "compatibility": {
-          "minimum": "1.11",
-          "verified": "1.11.1"
+          "minimum": "0.9.14",
+          "verified": "0.9.15"
         }
       }
     ]
@@ -80,11 +90,32 @@
   ],
   "packs": [
     {
-      "name": "my-homebrew",
-      "label": "My Homebrew",
-      "path": "./packs/my-homebrew",
+      "name": "equipment",
+      "label": "Equipment",
+      "path": "./packs/equipment",
       "type": "Item",
       "system": "dnd5e"
+    },
+    {
+      "name": "features",
+      "label": "Features",
+      "path": "./packs/features",
+      "type": "Item",
+      "system": "dnd5e"
+    },
+    {
+      "name": "rolltables",
+      "label": "Roll Tables",
+      "path": "./packs/rolltables",
+      "type": "RollTable",
+      "system": "dnd5e"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "My Homebrew",
+      "sorting": "m",
+      "packs": ["equipment", "features", "rolltables"]
     }
   ],
   "url": "https://github.com/DarkLight1337/my-homebrew"

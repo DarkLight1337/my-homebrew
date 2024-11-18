@@ -1,5 +1,5 @@
 import { ChatContext } from '../chat.mjs';
-import { WeaponProps, getCompendiumItem } from '../item.mjs';
+import { WeaponProps, getCompendiumEquipment } from '../item.mjs';
 import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
@@ -18,18 +18,12 @@ class FlameTongueItemProps {
     #props;
 
     /**
-     * @type {ChatContext}
-     */
-    #chat;
-
-    /**
      * @param {dnd5e_.Item5e<dnd5e_.WeaponData>} item
      */
     constructor(item) {
         this.item = item;
 
         this.#props = new WeaponProps(item);
-        this.#chat = new ChatContext(item.name);
     }
 
     /**
@@ -56,76 +50,32 @@ class FlameTongueItemProps {
         await this.#props.setCustomItemFlag('prevEffectType', value ?? -1);
     }
 
-    static DURABILITY_REGEXP = /<h2>Durability \[([0-9]+)\/([0-9]+)\]<\/h2>/;
-
     /**
      * @returns {number}
      */
     getCurrentDurability() {
-        const matches = this.#props.getDescription().match(FlameTongueItemProps.DURABILITY_REGEXP);
-
-        const currentDurability = matches?.[1];
-        if (currentDurability == null) throw new Error('Cannot find current durability');
-
-        return Number.parseInt(currentDurability, 10);
+        return this.#props.getCurrentUses();
     }
 
     /**
      * @param {number} value
      */
     async setCurrentDurability(value) {
-        const newDurabilityText = `<h2>Durability [${value.toFixed(0)}/$2]</h2>`;
-
-        const prevDescription = this.#props.getDescription();
-
-        let newDescription = null;
-        if (prevDescription.match(FlameTongueItemProps.DURABILITY_REGEXP) == null) {
-            this.#chat.sendDetails('Cannot find durability to replace. Please set the durability header manually.');
-        } else {
-            newDescription = prevDescription.replace(
-                FlameTongueItemProps.DURABILITY_REGEXP,
-                newDurabilityText,
-            );
-        }
-
-        if (newDescription != null) {
-            await this.#props.setDescription(newDescription);
-        }
+        await this.#props.setCurrentUses(value);
     }
 
     /**
      * @returns {number}
      */
     getMaxDurability() {
-        const matches = this.#props.getDescription().match(FlameTongueItemProps.DURABILITY_REGEXP);
-
-        const maxDurability = matches?.[2];
-        if (maxDurability == null) throw new Error('Cannot find max durability');
-
-        return Number.parseInt(maxDurability, 10);
+        return this.#props.getMaxUses();
     }
 
     /**
      * @param {number} value
      */
     async setMaxDurability(value) {
-        const newDurabilityText = `<h2>Durability [$1/${value.toFixed(0)}]</h2>`;
-
-        const prevDescription = this.#props.getDescription();
-
-        let newDescription = null;
-        if (prevDescription.match(FlameTongueItemProps.DURABILITY_REGEXP) == null) {
-            this.#chat.sendDetails('Cannot find durability to replace. Please set the durability header manually.');
-        } else {
-            newDescription = prevDescription.replace(
-                FlameTongueItemProps.DURABILITY_REGEXP,
-                newDurabilityText,
-            );
-        }
-
-        if (newDescription != null) {
-            await this.#props.setDescription(newDescription);
-        }
+        await this.#props.setMaxUses(value);
     }
 
     /**
@@ -135,85 +85,23 @@ class FlameTongueItemProps {
         return this.#props.getIsAttuned();
     }
 
-    // Initially, the attack bonus should have a trailing "- X" to indicate the penalty from fusion
-    static ATTACK_PENALTY_REGEXP = /-\s*([0-9]+)$/;
-
     /**
      * @returns {boolean}
      */
     getIsFused() {
-        const matches = this.#props.getAttackBonusFormula()
-            .match(FlameTongueItemProps.ATTACK_PENALTY_REGEXP);
+        const effects = this.#props.getEffects();
+        const halfFusedEffect = effects.find((e) => e.name === 'Half-Fused');
+        if (halfFusedEffect == null) return false;
 
-        const attackPenalty = matches?.[1];
-        if (attackPenalty == null) return false;
-
-        return Number.parseInt(attackPenalty, 10) !== 0;
+        return !halfFusedEffect.disabled;
     }
 
-    /**
-     * @param {boolean} isFused
-     */
-    async setIsFused(isFused) {
-        const newAttackPenaltyText = isFused ? '-2' : '';
+    async removeIsFused() {
+        const effects = this.#props.getEffects();
+        const halfFusedEffect = effects.find((e) => e.name === 'Half-Fused');
+        if (halfFusedEffect == null) return;
 
-        const prevAttackBonusFormula = this.#props.getAttackBonusFormula();
-
-        let newAttackBonusFormula = null;
-        if (prevAttackBonusFormula.match(FlameTongueItemProps.ATTACK_PENALTY_REGEXP) == null) {
-            newAttackBonusFormula = `${prevAttackBonusFormula} ${newAttackPenaltyText}`;
-        } else {
-            newAttackBonusFormula = prevAttackBonusFormula.replace(
-                FlameTongueItemProps.ATTACK_PENALTY_REGEXP,
-                newAttackPenaltyText,
-            );
-        }
-
-        if (newAttackBonusFormula != null) {
-            await this.#props.setAttackBonusFormula(newAttackBonusFormula);
-        }
-    }
-
-    // Initially, the damage formula should have a trailing "- X" to
-    // indicate the penalty from durability loss
-    static DAMAGE_PENALTY_REGEXP = /-\s*([0-9]+)$/;
-
-    async updateDamagePenalty() {
-        const currentDurability = this.getCurrentDurability();
-        const maxDurability = this.getMaxDurability();
-        const newDamagePenaltyText = `- ${maxDurability - currentDurability}`;
-
-        const prevDamageFormula = this.#props.getDamageFormula();
-        let newDamageFormula;
-
-        if (prevDamageFormula.match(FlameTongueItemProps.DAMAGE_PENALTY_REGEXP) == null) {
-            newDamageFormula = `${prevDamageFormula} ${newDamagePenaltyText}`;
-        } else {
-            newDamageFormula = prevDamageFormula.replace(
-                FlameTongueItemProps.DAMAGE_PENALTY_REGEXP,
-                newDamagePenaltyText,
-            );
-        }
-
-        const prevVersatileDamageFormula = this.#props.getVersatileDamageFormula();
-        let newVersatileDamageFormula;
-
-        if (prevVersatileDamageFormula.match(FlameTongueItemProps.DAMAGE_PENALTY_REGEXP) == null) {
-            newVersatileDamageFormula = `${prevVersatileDamageFormula} ${newDamagePenaltyText}`;
-        } else {
-            newVersatileDamageFormula = prevVersatileDamageFormula.replace(
-                FlameTongueItemProps.DAMAGE_PENALTY_REGEXP,
-                newDamagePenaltyText,
-            );
-        }
-
-        if (newDamageFormula != null) {
-            await this.#props.setDamageFormula(newDamageFormula);
-        }
-
-        if (newVersatileDamageFormula != null) {
-            await this.#props.setVersatileDamageFormula(newVersatileDamageFormula);
-        }
+        await halfFusedEffect.update({ disabled: true });
     }
 }
 
@@ -253,7 +141,7 @@ class MacroHandler {
      * @returns {Promise<dnd5e_.Item5e<dnd5e_.WeaponData>>}
      */
     #getDerivedItem(name) {
-        return getCompendiumItem(`Unstable Flame: ${name}`);
+        return getCompendiumEquipment(`Unstable Flame: ${name}`);
     }
 
     /**
@@ -300,8 +188,6 @@ class MacroHandler {
 
         const effectType = await this.#rollEffectTrigger({ isAttuned });
         await this.#itemProps.setEffectType(effectType);
-
-        await this.#itemProps.updateDamagePenalty();
     }
 
     /**
@@ -385,8 +271,8 @@ class MacroHandler {
                     await this.#rollAoE(effectItem);
 
                     const prevIsFused = this.#itemProps.getIsFused();
-                    await this.#itemProps.setIsFused(false);
                     if (prevIsFused) {
+                        await this.#itemProps.removeIsFused();
                         this.#chat.sendMessage('The longsword tip is blasted away from the sword!');
                     }
 
