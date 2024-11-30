@@ -62,7 +62,7 @@
         "manifest": "https://gitlab.com/tposney/dae/raw/dndv4/package/module.json",
         "compatibility": {
           "minimum": "12.0.2",
-          "maximum": "12.0.3"
+          "verified": "12.0.3"
         }
       },
       {
