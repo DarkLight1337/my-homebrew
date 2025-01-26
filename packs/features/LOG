@@ -1,14 +1,14 @@
-2024/12/01-22:50:33.075 3e2c Recovering log #64
-2024/12/01-22:50:33.090 3e2c Delete type=0 #64
-2024/12/01-22:50:33.090 3e2c Delete type=3 #62
-2024/12/01-22:54:22.642 2428 Level-0 table #70: started
-2024/12/01-22:54:22.647 2428 Level-0 table #70: 7250 bytes OK
-2024/12/01-22:54:22.655 2428 Delete type=0 #68
-2024/12/01-22:54:22.655 2428 Manual compaction at level-0 from '!folders!Wn65PRwq0CZzI5ct' @ 72057594037927935 : 1 .. '!items.effects!EuZ4q7rmWrXKbO7n.waI4oHqhpbKUem0M' @ 0 : 0; will stop at '!items!wFcwpoaMbry6PVOB' @ 44 : 1
-2024/12/01-22:54:22.655 2428 Compacting 1@0 + 1@1 files
-2024/12/01-22:54:22.667 2428 Generated table #71@0: 9 keys, 12238 bytes
-2024/12/01-22:54:22.667 2428 Compacted 1@0 + 1@1 files => 12238 bytes
-2024/12/01-22:54:22.674 2428 compacted to: files[ 0 1 0 0 0 0 0 ]
-2024/12/01-22:54:22.674 2428 Delete type=2 #66
-2024/12/01-22:54:22.675 2428 Delete type=2 #70
-2024/12/01-22:54:22.700 2428 Manual compaction at level-0 from '!items!wFcwpoaMbry6PVOB' @ 44 : 1 .. '!items.effects!EuZ4q7rmWrXKbO7n.waI4oHqhpbKUem0M' @ 0 : 0; will stop at (end)
+2025/01/26-21:04:06.061 15c8 Recovering log #73
+2025/01/26-21:04:06.072 15c8 Delete type=0 #73
+2025/01/26-21:04:06.072 15c8 Delete type=3 #72
+2025/01/26-22:12:31.205 70b8 Level-0 table #77: started
+2025/01/26-22:12:31.216 70b8 Level-0 table #77: 2008 bytes OK
+2025/01/26-22:12:31.223 70b8 Delete type=0 #75
+2025/01/26-22:12:31.230 70b8 Manual compaction at level-0 from '!folders!Wn65PRwq0CZzI5ct' @ 72057594037927935 : 1 .. '!items.effects!EuZ4q7rmWrXKbO7n.waI4oHqhpbKUem0M' @ 0 : 0; will stop at '!items!9C3bT9D6oKZGlKwy' @ 53 : 1
+2025/01/26-22:12:31.230 70b8 Compacting 1@0 + 1@1 files
+2025/01/26-22:12:31.235 70b8 Generated table #78@0: 9 keys, 12253 bytes
+2025/01/26-22:12:31.235 70b8 Compacted 1@0 + 1@1 files => 12253 bytes
+2025/01/26-22:12:31.241 70b8 compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/01/26-22:12:31.241 70b8 Delete type=2 #71
+2025/01/26-22:12:31.242 70b8 Delete type=2 #77
+2025/01/26-22:12:31.242 70b8 Manual compaction at level-0 from '!items!9C3bT9D6oKZGlKwy' @ 53 : 1 .. '!items.effects!EuZ4q7rmWrXKbO7n.waI4oHqhpbKUem0M' @ 0 : 0; will stop at (end)

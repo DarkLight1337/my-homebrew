@@ -9,17 +9,25 @@ import { fromUuid as globalFromUuid } from './foundry/dist/core/utils.mjs';
 import * as foundryTypes from './foundry/public/scripts/foundry_.js';
 import * as dnd5eTypes from './dnd5e/dnd5e.mjs';
 
-import { configSettings, checkRule, enableWorkflow, midiSoundSettings } from 'midi-qol/src/module/settings.js';
+import { gameStats, geti18nOptions, geti18nTranslations } from 'midi-qol';
+import { configSettings, checkRule, enableWorkflow, midiSoundSettings, collectSettingData } from 'midi-qol/src/module/settings.js';
 import { overTimeJSONData } from 'midi-qol/src/module/Hooks.js';
 import { SaferSocket } from 'midi-qol/src/module/GMAction.js';
 import { TrapWorkflow, DamageOnlyWorkflow, Workflow, DummyWorkflow, WORKFLOWSTATES } from 'midi-qol/src/module/workflow.js';
 import {
-    addConcentration, applyTokenDamage, canSense, canSenseModes,
+    addConcentration, addRollTo, applyTokenDamage, canSee, canSense, canSenseModes,
+    checkDistance,
     checkIncapacitated, checkNearby, checkRange,
-    completeItemRoll, completeItemUse, computeCoverBonus, contestedRoll,
-    displayDSNForRoll, doConcentrationCheck, doOverTimeEffect, findNearby,
-    getChanges, getConcentrationEffect, getDistanceSimple, getDistanceSimpleOld, getTokenPlayerName, getTraitMult,
-    hasCondition, hasUsedBonusAction, hasUsedReaction, isTargetable, midiRenderRoll, MQfromActorUuid, MQfromUuid,
+    chooseEffect,
+    completeItemRoll, completeItemUse, computeCoverBonus, computeDistance, contestedRoll,
+    createConditionData,
+    createDamageDetail,
+    debouncedUpdate,
+    displayDSNForRoll, doConcentrationCheck, doOverTimeEffect, evalAllConditions, evalCondition, findNearby,
+    findNearbyCount,
+    getCachedDocument,
+    getChanges, getCheckRollModeFor, getConcentrationEffect, getDistance, getDistanceSimple, getDistanceSimpleOld, getSaveRollModeFor, getTokenForActor, getTokenForActorAsSet, getTokenPlayerName, getTraitMult,
+    hasCondition, hasUsedBonusAction, hasUsedReaction, isTargetable, itemReaction, midiRenderRoll, MQfromActorUuid, MQfromUuid,
     playerFor, playerForActor, reactionDialog, reportMidiCriticalFlags, requestReactions,
     setBonusActionUsed, setReactionUsed, tokenForActor, validRollAbility,
 } from 'midi-qol/src/module/utils.js';
@@ -136,66 +144,12 @@ declare global {
 
     // MidiQOL module
     const MidiQOL: {
-        addConcentration: typeof addConcentration;
-        addUndoChatMessage: typeof addUndoChatMessage;
-        applyTokenDamage: typeof applyTokenDamage;
-        canSense: typeof canSense;
-        canSenseModes: typeof canSenseModes;
-        checkIncapacitated: typeof checkIncapacitated;
-        checkNearby: typeof checkNearby;
-        checkRange: typeof checkRange;
-        checkRule: typeof checkRule;
-        completeItemRoll: typeof completeItemRoll;
         completeItemUse: typeof completeItemUse;
-        computeCoverBonus: typeof computeCoverBonus;
-        computeDistance: typeof getDistanceSimple;
-        ConfigPanel: typeof ConfigPanel;
-        configSettings: () => typeof configSettings;
-        contestedRoll: typeof contestedRoll;
         DamageOnlyWorkflow: typeof DamageOnlyWorkflow;
-        displayDSNForRoll: typeof displayDSNForRoll;
-        doConcentrationCheck: typeof doConcentrationCheck;
-        doOverTimeEffect: typeof doOverTimeEffect;
-        DummyWorkflow: typeof DummyWorkflow;
-        enableWorkflow: typeof enableWorkflow;
-        findNearby: typeof findNearby;
-        GameSystemConfig: typeof dnd5e.config;
-        getChanges: typeof getChanges;
-        getConcentrationEffect: typeof getConcentrationEffect;
-        getDistance: typeof getDistanceSimpleOld;
-        getTokenPlayerName: typeof getTokenPlayerName;
-        getTraitMult: typeof getTraitMult;
-        getUndoQueue: typeof getUndoQueue;
-        hasCondition: typeof hasCondition;
-        hasUsedBonusAction: typeof hasUsedBonusAction;
         hasUsedReaction: typeof hasUsedReaction;
-        incapacitatedConditions: string[];
-        isTargetable: typeof isTargetable;
-        midiRenderRoll: typeof midiRenderRoll;
-        midiSoundSettings: () => typeof midiSoundSettings;
-        MQfromActorUuid: typeof MQfromActorUuid;
-        MQfromUuid: typeof MQfromUuid;
-        MQFromUuid: typeof MQfromUuid;
-        overTimeJSONData: typeof overTimeJSONData;
-        playerFor: typeof playerFor;
         playerForActor: typeof playerForActor;
-        reactionDialog: typeof reactionDialog;
-        requestReactions: typeof requestReactions;
-        removeMostRecentWorkflow: typeof removeMostRecentWorkflow;
-        reportMidiCriticalFlags: typeof reportMidiCriticalFlags;
-        resolveTargetConfirmation: typeof resolveTargetConfirmation;
-        selectTargetsForTemplate: typeof templateTokens;
-        setBonusActionUsed: typeof setBonusActionUsed;
-        setReactionUsed: typeof setReactionUsed;
-        showUndoQueue: typeof showUndoQueue;
-        showUndoWorkflowApp: typeof showUndoWorkflowApp;
         socket: () => typeof SaferSocket;
-        TargetConfirmationDialog: typeof TargetConfirmationDialog;
         tokenForActor: typeof tokenForActor;
-        TrapWorkflow: typeof TrapWorkflow;
-        TroubleShooter: typeof TroubleShooter;
-        undoMostRecentWorkflow: typeof undoMostRecentWorkflow;
-        validRollAbility: typeof validRollAbility;
         Workflow: typeof Workflow;
     };
 

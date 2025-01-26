@@ -1,38 +1,36 @@
 import { runMidiQOLItemMacro } from '../runner.mjs';
 
 /**
- * https://gitlab.com/tposney/midi-qol/-/blob/dnd3/src/module/utils.ts?ref_type=heads#L3662
+ * https://gitlab.com/tposney/midi-qol/-/blob/v12dnd4/src/module/utils.ts#L3740
  * 
  * @template {dnd5e_.SystemDataModel} D 
  * @param {dnd5e_.Item5e<D>} item 
  * @param {string} triggerType
  * @param {number} maxLevel
  * @param {boolean} onlyZeroCost
- * @returns {boolean}
+ * @returns {any[]}
  */
-function itemReaction(item, triggerType, maxLevel, onlyZeroCost) {
-    // @ts-expect-error
-    const { activation, preparation, level, attunement } = item.system;
+function getValidReactions(item, triggerType, maxLevel, onlyZeroCost) {
+    // TODO most of the checks need to be activity checks
+    if (!item.system.activities) return [];
+    if (!item.system.attuned && item.system.attunement === 'required') return [];
 
-    if (!activation?.type?.includes('reaction')) return false;
-    if (activation?.cost > 0 && onlyZeroCost) return false;
-    if (item.type === 'spell') {
-        if (MidiQOL.configSettings().ignoreSpellReactionRestriction) return true;
-        if (preparation.mode === 'atwill') return true;
-        if (level === 0) return true;
-        if (preparation?.prepared !== true && preparation?.mode === 'prepared') return false;
-        if (preparation.mode !== 'innate') return level <= maxLevel;
+    const validReactions = [];
+
+    for (const activity of item.system.activities) {
+        if (activity.activation?.type?.includes('reaction')) {
+            if (activity.activation.type !== 'reaction') {
+                console.error(`itemReaction | item ${item.name} ${activity.name} has a reaction type of ${activity.activation.type} which is deprecated - please update to reaction and reaction conditions`)
+            }
+
+            // TODO can't specify 0 cost reactions in dnd5e 4.x - have to find another way
+            if (!onlyZeroCost || (activity.activation?.value ?? 1) === 0) {
+                validReactions.push(activity);
+            }
+        }
     }
-    if (attunement === dnd5e.config.attunementTypes.REQUIRED) return false;
 
-    // @ts-expect-error
-    if (!item._getUsageUpdates({
-        consumeUsage: item.hasLimitedUses,
-        consumeResource: item.hasResource,
-        slotLevel: null,
-    })) return false;
-
-    return true;
+    return validReactions;
 }
 
 /**
@@ -41,7 +39,7 @@ function itemReaction(item, triggerType, maxLevel, onlyZeroCost) {
 export async function observeHit(args) {
     await runMidiQOLItemMacro(args, async ({ hitTargets, workflow }) => {
         if (workflow.attackRoll && hitTargets.length > 0) {
-            const effect = workflow.actor.effects.getName('Observe Hit');
+            const effect = workflow.actor.effects.getName('Observe Hit (In Aura)');
             if (!effect) return;
 
             /**
@@ -67,9 +65,13 @@ export async function observeHit(args) {
             const promptPlayer = originPlayer.active ? originPlayer : game.users?.activeGM;
             if (!promptPlayer) return;
 
-            const triggerType = 'reactionmanual';
+            const triggerType = 'reaction';
             const maxLevel = 9;
             const hasUsedReaction = MidiQOL.hasUsedReaction(originActor);
+            const candidateActivities = originActor.items
+                .map((item) => getValidReactions(item, triggerType, maxLevel, hasUsedReaction))
+                .flat();
+            if (!candidateActivities) return;
 
             for (const target of hitTargets) {
                 // @ts-expect-error
@@ -77,8 +79,7 @@ export async function observeHit(args) {
                 await MidiQOL.socket().executeAsUser('chooseReactions', promptPlayer.id, {
                     tokenUuid: promptToken.uuid,
                     reactionFlavor: `<h4>${workflow.actor.name} has hit ${target.name}. Do you wish to react against ${target.name}?</h4>`,
-                    reactionItemList: originActor.items.filter(
-                        (item) => itemReaction(item, triggerType, maxLevel, hasUsedReaction)),
+                    reactionActivityList: candidateActivities,
                     triggerTokenUuid: target.uuid,
                     triggerType: triggerType,
                     options: {},
