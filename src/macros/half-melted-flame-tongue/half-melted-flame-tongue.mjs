@@ -252,14 +252,14 @@ class MacroHandler {
             case 4: {
                 this.#chat.sendMessage('The sword heats up and sparks.');
 
-                // Defer to OnHitHandler
+                // Defer to handleOnHit
 
                 return 4;
             }
             case 5: {
                 this.#chat.sendMessage('The sword is briefly wreathed in flame!');
 
-                // Defer to OnHitHandler
+                // Defer to handleOnHit
 
                 return 5;
             }

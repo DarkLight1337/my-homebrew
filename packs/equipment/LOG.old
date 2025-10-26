@@ -1,3 +1,23 @@
-2024/12/19-17:51:45.086 5234 Recovering log #409
-2024/12/19-17:51:45.104 5234 Delete type=0 #409
-2024/12/19-17:51:45.104 5234 Delete type=3 #407
+2025/10/26-19:39:20.471 95a4 Recovering log #419
+2025/10/26-19:39:20.472 95a4 Level-0 table #421: started
+2025/10/26-19:39:20.479 95a4 Level-0 table #421: 46617 bytes OK
+2025/10/26-19:39:20.494 95a4 Delete type=0 #419
+2025/10/26-19:39:20.494 95a4 Delete type=3 #418
+2025/10/26-19:43:48.227 852c Level-0 table #424: started
+2025/10/26-19:43:48.227 852c Level-0 table #424: 0 bytes OK
+2025/10/26-19:43:48.231 852c Delete type=0 #422
+2025/10/26-19:43:48.241 852c Manual compaction at level-0 from '!folders!4RITg50zOSEGQz1M' @ 72057594037927935 : 1 .. '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 0 : 0; will stop at '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 2486 : 1
+2025/10/26-19:43:48.241 852c Compacting 1@0 + 0@1 files
+2025/10/26-19:43:48.251 852c Generated table #425@0: 27 keys, 46617 bytes
+2025/10/26-19:43:48.251 852c Compacted 1@0 + 0@1 files => 46617 bytes
+2025/10/26-19:43:48.255 852c compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/26-19:43:48.255 852c Delete type=2 #421
+2025/10/26-19:43:48.280 852c Manual compaction at level-0 from '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 2486 : 1 .. '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 0 : 0; will stop at (end)
+2025/10/26-19:43:48.301 852c Manual compaction at level-1 from '!folders!4RITg50zOSEGQz1M' @ 72057594037927935 : 1 .. '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 0 : 0; will stop at '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 2486 : 1
+2025/10/26-19:43:48.301 852c Compacting 1@1 + 1@2 files
+2025/10/26-19:43:48.310 852c Generated table #426@1: 31 keys, 47341 bytes
+2025/10/26-19:43:48.310 852c Compacted 1@1 + 1@2 files => 47341 bytes
+2025/10/26-19:43:48.312 852c compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/10/26-19:43:48.312 852c Delete type=2 #411
+2025/10/26-19:43:48.312 852c Delete type=2 #425
+2025/10/26-19:43:48.321 852c Manual compaction at level-1 from '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 2486 : 1 .. '!items.effects!lUdZ1dYQ6gtTU7Mc.GIEliGqiaCqpe7FJ' @ 0 : 0; will stop at (end)

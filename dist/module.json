@@ -3,7 +3,7 @@
     "id": "my-homebrew",
     "title": "My Homebrew",
     "description": "A collection of my homebrew content.",
-    "version": "1.3.4",
+    "version": "1.4.0",
     "authors": [
         {
             "name": "Cyrus Leung",
@@ -12,8 +12,8 @@
         }
     ],
     "compatibility": {
-        "minimum": "12",
-        "verified": "12.331"
+        "minimum": "13",
+        "verified": "13.348"
     },
     "relationships": {
         "systems": [
@@ -22,9 +22,8 @@
                 "type": "system",
                 "manifest": "https://raw.githubusercontent.com/foundryvtt/dnd5e/master/system.json",
                 "compatibility": {
-                    "minimum": "4.1.0",
-                    "maximum": "4.9.99",
-                    "verified": "4.2.2"
+                    "minimum": "5.1",
+                    "verified": "5.1.10"
                 }
             }
         ],
@@ -34,8 +33,8 @@
                 "type": "module",
                 "manifest": "https://r2.foundryvtt.com/packages-public/dnd-players-handbook/module.json",
                 "compatibility": {
-                    "minimum": "1.0.0",
-                    "verified": "1.3.0"
+                    "minimum": "2.0",
+                    "verified": "2.1.0"
                 }
             },
             {
@@ -43,35 +42,35 @@
                 "type": "module",
                 "manifest": "https://r2.foundryvtt.com/packages-public/dnd-dungeon-masters-guide/module.json",
                 "compatibility": {
-                    "minimum": "1.0.0",
-                    "verified": "1.1.0"
+                    "minimum": "2.0",
+                    "verified": "2.0.0"
                 }
             },
             {
                 "id": "midi-qol",
                 "type": "module",
-                "manifest": "https://gitlab.com/tposney/midi-qol/raw/v12dnd4/package/module.json",
+                "manifest": "https://gitlab.com/tposney/midi-qol/raw/v13/package/module.json",
                 "compatibility": {
-                    "minimum": "12.4",
-                    "verified": "12.4.24"
+                    "minimum": "13.0",
+                    "verified": "13.0.28"
                 }
             },
             {
                 "id": "dae",
                 "type": "module",
-                "manifest": "https://gitlab.com/tposney/dae/raw/dndv4/package/module.json",
+                "manifest": "https://gitlab.com/tposney/dae/raw/v13/package/module.json",
                 "compatibility": {
-                    "minimum": "12.0.2",
-                    "verified": "12.0.11"
+                    "minimum": "13.0",
+                    "verified": "13.0.16"
                 }
             },
             {
                 "id": "times-up",
                 "type": "module",
-                "manifest": "https://gitlab.com/tposney/times-up/raw/v11/package/module.json",
+                "manifest": "https://gitlab.com/tposney/times-up/raw/master/package/module.json",
                 "compatibility": {
-                    "minimum": "11.3",
-                    "verified": "11.3.19"
+                    "minimum": "13.1",
+                    "verified": "13.1.0"
                 }
             },
             {
@@ -79,8 +78,8 @@
                 "type": "module",
                 "manifest": "https://github.com/kandashi/Active-Auras/releases/latest/download/module.json",
                 "compatibility": {
-                    "minimum": "0.11.0",
-                    "verified": "0.11.3"
+                    "minimum": "0.12",
+                    "verified": "0.12.4"
                 }
             }
         ]
